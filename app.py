@@ -25,5 +25,22 @@ def login():
         else:
             return render_template('login.html', caution = "Username or Password is incorrect. Please try again." )
 
+@app.route('/register', methods=["GET","POST"])
+def register():
+    if request.method == "GET":
+        return render_template('register.html')
+    elif request.method == "POST":
+        first_name = request.form.get('first_name')
+        last_name = request.form.get('last_name')
+        username = request.form.get('username')
+        password = request.form.get('password')
+        
+        if not first_name or not last_name or not username or not password:
+            error = "Please do not leave any fields empty!"
+            return render_template('register.html', error=error)
+        
+        return render_template('hello.html', first_name=first_name, last_name=last_name,username=username, password=password)
+    
+    
 if __name__ == "__main__":
     app.run(debug=True)

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registration Page</title>
+  </head>
+  <body>
+    <h1>New Registration</h1>
+    <hr />
+    <form action="{{url_for('register')}}" method="POST">
+      <label for="first_name"
+        ><span style="color: red">*</span>First Name:</label
+      >
+      <input
+        type="text"
+        id="first_name"
+        name="first_name"
+        placeholder="eg- Ram"
+      />
+      <br /><br />
+      <label for="last_name"
+        ><span style="color: red">*</span>Last Name:
+      </label>
+      <input
+        type="text"
+        id="last_name"
+        name="last_name"
+        placeholder="eg- Sharma"
+      />
+      <br /><br />
+      <label for="username"><span style="color: red">*</span>Username: </label>
+      <input
+        type="text"
+        id="username"
+        name="username"
+        placeholder="your username"
+      />
+      <br />
+      <br />
+      <label for="password"><span style="color: red">*</span>Password: </label>
+      <input
+        type="password"
+        id="password"
+        name="password"
+        placeholder="******"
+      />
+      <br />
+      <br />
+      <input type="submit" value="Register" />
+    </form>
+    <p>
+      Please fill all the fields marked with <span style="color: red">*</span>
+    </p>
+    <br />
+    <p style="color: red">{{error}}</p>
+  </body>
+</html>
