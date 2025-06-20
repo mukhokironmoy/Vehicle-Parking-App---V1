@@ -1,10 +1,10 @@
-from flask import Flask, url_for
+from flask import Flask, url_for, render_template
 
 app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return "<h1> Welcome! </h1>"
+    return "<h1> This is the root page. </h1>"
 
 @app.route('/hello')
 def hello_fxn():
@@ -12,8 +12,7 @@ def hello_fxn():
 
 @app.route('/user/<name>')
 def greet(name):
-    return f"""Hi there, {name}! How're you doing?\n\n Here's a link to go back: <a href = "{url_for('home')}"> Go back from here :) </a>"""
-
+    return render_template('hello.html', name=name)
 
 if __name__ == "__main__":
     app.run(debug=True)
