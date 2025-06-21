@@ -1,19 +1,30 @@
 from flask import Flask, url_for, render_template, request
+from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 
-@app.route('/')
+#config
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///parking.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+#db instance
+db = SQLAlchemy(app)
+
+#importing models
+from models.user import User
+
+'''----------------------------------------------------------------------------------------------------------------------------------------------'''
+#root 
+@app.route('/') 
 def home():
     return "<h1> This is the root page. </h1>"
 
-@app.route('/hello')
-def hello_fxn():
-    return "Hello Yomnorik!"
-
-@app.route('/user/<name>')
+#user landing route
+@app.route('/user/<name>') 
 def greet(name):
     return render_template('hello.html', name=name)
 
-@app.route('/login', methods=["POST", "GET"])
+#login route
+@app.route('/login', methods=["POST", "GET"]) 
 def login():
     if request.method == "GET":
         return render_template('login.html')
@@ -25,6 +36,7 @@ def login():
         else:
             return render_template('login.html', caution = "Username or Password is incorrect. Please try again." )
 
+#register route
 @app.route('/register', methods=["GET","POST"])
 def register():
     if request.method == "GET":
