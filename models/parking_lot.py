@@ -7,3 +7,5 @@ class ParkingLot(db.Model):
     pin_code = db.Column(db.String(10), nullable = False)
     price_per_hour = db.Column(db.Float, nullable = False)
     max_spots = db.Column(db.Integer, nullable = False)
+    
+    spots = db.relationship("ParkingSpot", backref="lot", lazy=True)
