@@ -2,7 +2,7 @@ from extensions import db
 import uuid
 
 class User(db.Model):
-    id = db.Column(db.String(36), primary_key=True, default= lambda: str(uuid.uuid4()))
+    id = db.Column(db.Integer, primary_key = True)
     first_name = db.Column(db.String(100), nullable = False)
     last_name = db.Column(db.String(100), nullable = False)
     username = db.Column(db.String(100), unique = True, nullable = False)
