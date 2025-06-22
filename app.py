@@ -1,4 +1,4 @@
-from flask import Flask, url_for, render_template, request
+from flask import Flask, url_for, render_template, request, redirect
 from extensions import db
 from logging_config import logger, user_test_reference
 app = Flask(__name__)
@@ -43,10 +43,13 @@ def login():
             #check if password is correct
             if user.check_password(password):
                 
-                #render homepage
-                first_name = user.first_name
-                logger.info(f"\nUser login: Username: {username}\n")
-                return render_template('dashboard.html', first_name = first_name)
+                #render dashboard
+                if user.role == "admin":
+                    return redirect(url_for('admin_dashboard'))
+                else:                
+                    first_name = user.first_name
+                    logger.info(f"\nUser login: Username: {username}\n")
+                    return redirect(url_for('user_dashboard',name=first_name))
             
             else:
                 logger.info(f"\nInvalid login: User entered wrong password\nAttempted by: {username}\n")
@@ -112,7 +115,14 @@ def register():
 
         logger.info(f"New user registered: {username}")
         return render_template('registeration_success.html', first_name=first_name, last_name=last_name,username=username, contact_number=contact_number)
-        
+ 
+@app.route('/admin/dashboard')
+def admin_dashboard():
+    return render_template('admin_dashboard.html')  
+
+@app.route('/<name>/dashboard')
+def user_dashboard(name):
+    return render_template('user_dashboard.html',first_name = name)     
     
 if __name__ == "__main__":
     logger.info("🚀 Flask app is starting...")

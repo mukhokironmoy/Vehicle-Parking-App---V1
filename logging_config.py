@@ -7,7 +7,9 @@ log_dir = Path("logs")
 log_dir.mkdir(exist_ok=True)
 
 #define log file path
-log_file = log_dir/"app.log"
+now = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+log_file = log_dir / f"app_{now}.log"
+
 
 #configure logging
 logging.basicConfig(

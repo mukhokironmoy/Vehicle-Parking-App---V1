@@ -10,6 +10,7 @@ class User(db.Model):
     username = db.Column(db.String(100), unique = True, nullable = False)
     _password = db.Column("password", db.String(200), nullable = False)
     contact_number = db.Column(db.String(20))
+    role = db.Column(db.String(10), nullable=False, default="user")
     
     @property
     def password(self):

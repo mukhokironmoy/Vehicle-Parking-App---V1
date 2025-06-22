@@ -3,10 +3,28 @@ from models.user import User
 from models.parking_lot import ParkingLot
 from models.parking_spot import ParkingSpot
 from models.reservation import Reservation
+from logging_config import logger
 
 def create():
     with app.app_context():
         db.create_all()
+        
+        admin = User.query.filter_by(username="admin").first()
+        
+        if not admin:
+            admin_user = User(
+                first_name="Admin",
+                last_name="User",
+                username="admin",
+                password="admin123",  
+                contact_number="0000000000",
+                role="admin"
+            )
+            
+            db.session.add(admin_user)
+            db.session.commit()
+            logger.info("Admin user created with username='admin' and password='admin123'")
+            
 
         # ✅ Test Parking Lot
         if not ParkingLot.query.first():
@@ -19,7 +37,7 @@ def create():
             )
             db.session.add(test_lot)
             db.session.commit()
-            print("✅ Test parking lot added.")
+            logger.info("Test parking lot added.")
 
         # ✅ Test Parking Spot
         lot = ParkingLot.query.first()
@@ -27,9 +45,9 @@ def create():
             test_spot = ParkingSpot(lot_id=lot.id)
             db.session.add(test_spot)
             db.session.commit()
-            print(f"✅ Test parking spot added for lot ID {lot.id}")
+            logger.info(f"Test parking spot added for lot ID {lot.id}")
         else:
-            print("⚠️ Parking spot already exists or lot missing.")
+            logger.info("Parking spot already exists or lot missing.")
 
         # ✅ Test User
         if not User.query.filter_by(username="test_user").first():
@@ -42,9 +60,9 @@ def create():
             )
             db.session.add(test_user)
             db.session.commit()
-            print("✅ Test user added.")
+            logger.info("Test user added.")
         else:
-            print("⚠️ Test user already exists.")
+            logger.info("Test user already exists.")
 
         # ✅ Dummy Reservation
         user = User.query.filter_by(username="test_user").first()
@@ -59,9 +77,9 @@ def create():
             )
             db.session.add(dummy_reservation)
             db.session.commit()
-            print(f"✅ Dummy reservation created for user {user.username} at spot ID {spot.id}")
+            logger.info(f"Dummy reservation created for user {user.username} at spot ID {spot.id}")
         else:
-            print("⚠️ Dummy reservation already exists or missing user/spot.")
+            logger.info("Dummy reservation already exists or missing user/spot.")
 
 def test():
     with app.app_context():
@@ -69,4 +87,5 @@ def test():
         first_name = db.session.query(User.first_name).filter_by(username=username).scalar()
         print(first_name)
         
-test()
+create()
+#test()
