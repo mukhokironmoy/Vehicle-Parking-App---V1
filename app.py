@@ -1,10 +1,16 @@
-from flask import Flask, url_for, render_template, request, redirect
+from flask import Flask, url_for, render_template, request, redirect, make_response
 from extensions import db
 from logging_config import logger, user_test_reference
-app = Flask(__name__)
+from flask_login import login_user, login_required, current_user, logout_user
+import os
+from dotenv import load_dotenv
 
-#config
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///parking.db'
+load_dotenv()
+
+#app config
+app = Flask(__name__)
+app.secret_key = os.getenv("SECRET_KEY")
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 #db instance
@@ -13,16 +19,20 @@ db.init_app(app)
 #importing models
 from models.user import User
 
+#importing login manager
+from extensions import login_manager
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
 '''----------------------------------------------------------------------------------------------------------------------------------------------'''
 #root 
 @app.route('/') 
 def home():
     return "<h1> This is the root page. </h1>"
-
-#user landing route
-@app.route('/user/<name>') 
-def greet(name):
-    return render_template('hello.html', name=name)
 
 #login route
 @app.route('/login', methods=["POST", "GET"]) 
@@ -42,14 +52,15 @@ def login():
         if user:
             #check if password is correct
             if user.check_password(password):
+                login_user(user)
                 
                 #render dashboard
                 if user.role == "admin":
+                    logger.info(f"\nAdmin login")
                     return redirect(url_for('admin_dashboard'))
                 else:                
-                    first_name = user.first_name
-                    logger.info(f"\nUser login: Username: {username}\n")
-                    return redirect(url_for('user_dashboard',name=first_name))
+                    logger.info(f"\nUser login: \nUsername- {username}\n")
+                    return redirect(url_for('user_dashboard',username=current_user.username))
             
             else:
                 logger.info(f"\nInvalid login: User entered wrong password\nAttempted by: {username}\n")
@@ -59,7 +70,7 @@ def login():
         else:
             logger.info(f"\nInvalid login: Username '{username}' does not exist.\n")
             error = "Username does not exist. Please try again."
-            return render_template('login.html', error = error)
+            return render_template('login.html', error=error)
             
 #register route
 @app.route('/register', methods=["GET","POST"])
@@ -95,7 +106,7 @@ def register():
             error = "Username already exists. Please choose a unique username."
             return render_template("register.html", error=error)
 
-        # ✅ ONLY NOW: Create and commit user
+        #Create and commit user
         user = User(
             first_name=first_name,
             last_name=last_name,
@@ -117,12 +128,37 @@ def register():
         return render_template('registeration_success.html', first_name=first_name, last_name=last_name,username=username, contact_number=contact_number)
  
 @app.route('/admin/dashboard')
+@login_required
 def admin_dashboard():
-    return render_template('admin_dashboard.html')  
+    if current_user.role != "admin":
+        return redirect(url_for('user_dashboard', username=current_user.username))
+    return render_template('admin_dashboard.html')
 
-@app.route('/<name>/dashboard')
-def user_dashboard(name):
-    return render_template('user_dashboard.html',first_name = name)     
+
+@app.route('/<username>/dashboard')
+@login_required
+def user_dashboard(username):
+    if username != current_user.username:
+        return redirect(url_for('user_dashboard', username=current_user.username))
+    
+    return render_template('user_dashboard.html', first_name=current_user.first_name)
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logger.info(f"User logout: \nUsername- {current_user.username}")
+    logout_user()
+    return redirect(url_for('login'))
+
+@app.after_request
+def add_cache_control_headers(response):
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, private, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
+
+         
     
 if __name__ == "__main__":
     logger.info("🚀 Flask app is starting...")

@@ -2,3 +2,4 @@ __pycache__/
 logs/
 instance/
 mad1_venv/
+*.env

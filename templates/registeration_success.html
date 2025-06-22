@@ -1,35 +1,29 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Successfully Registered!</title>
-  </head>
-  <body>
-    <h1>Greetings {{ first_name }} {{last_name}}!</h1>
-    <br />
-    <h3>Welcome to the vehicle parking app!</h3>
-    <h3>You have successfully been registered!</h3>
-    <h3>Your details are as follows:-</h3>
-    <br />
-    <table border="1">
-      <tr>
-        <td>Username</td>
-        <td>{{username}}</td>
-      </tr>
-      <tr>
-        <td>First Name</td>
-        <td>{{first_name}}</td>
-      </tr>
-      <tr>
-        <td>Last name</td>
-        <td>{{last_name}}</td>
-      </tr>
-      <tr>
-        <td>Contact No</td>
-        <td>{{contact_number}}</td>
-      </tr>
-    </table>
-    <h6><a href="{{url_for('home')}}">Click here to go back to root :></a></h6>
-  </body>
-</html>
+<!-- registeration_success.html -->
+{% extends "base.html" %} {% block title %}Successfully Registered!{% endblock
+%} {%block content %}
+<h1>Greetings {{ first_name }} {{last_name}}!</h1>
+<br />
+<h3>Welcome to the vehicle parking app!</h3>
+<h3>You have successfully been registered!</h3>
+<h3>Your details are as follows:-</h3>
+<br />
+<table border="1">
+  <tr>
+    <td>Username</td>
+    <td>{{username}}</td>
+  </tr>
+  <tr>
+    <td>First Name</td>
+    <td>{{first_name}}</td>
+  </tr>
+  <tr>
+    <td>Last name</td>
+    <td>{{last_name}}</td>
+  </tr>
+  <tr>
+    <td>Contact No</td>
+    <td>{{contact_number}}</td>
+  </tr>
+</table>
+<h6><a href="{{url_for('home')}}">Click here to go back to root :></a></h6>
+{% endblock %}

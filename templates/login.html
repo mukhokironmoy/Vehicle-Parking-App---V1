@@ -1,40 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login Page</title>
-  </head>
-  <body>
-    <h1>Please login to continue</h1>
-    <hr />
-    <form action="{{url_for('login')}}" method="POST">
-      <label for="username"><span style="color: red">*</span>Username: </label>
-      <input
-        type="text"
-        id="username"
-        name="username"
-        placeholder="your username"
-        required
-      />
-      <br />
-      <br />
-      <label for="password"><span style="color: red">*</span>Password: </label>
-      <input
-        type="password"
-        id="password"
-        name="password"
-        placeholder="******"
-        required
-      />
-      <br />
-      <br />
-      <input type="submit" value="Login" />
-    </form>
-    <p>
-      Please fill all the fields marked with <span style="color: red">*</span>
-    </p>
-    <br />
-    <p style="color: red">{{error}}</p>
-  </body>
-</html>
+<!-- login.html -->
+{% extends "base.html" %} {% block title %}Login{% endblock %} {%block content%}
+<h1>Please login to continue</h1>
+<hr />
+<form action="{{url_for('login')}}" method="POST">
+  <label for="username"><span style="color: red">*</span>Username: </label>
+  <input
+    type="text"
+    id="username"
+    name="username"
+    placeholder="your username"
+    required
+  />
+  <br />
+  <br />
+  <label for="password"><span style="color: red">*</span>Password: </label>
+  <input
+    type="password"
+    id="password"
+    name="password"
+    placeholder="******"
+    required
+  />
+  <br />
+  <br />
+  <input type="submit" value="Login" />
+</form>
+<p>Please fill all the fields marked with <span style="color: red">*</span></p>
+<br />
+<p style="color: red">{{error}}</p>
+{% endblock %}
