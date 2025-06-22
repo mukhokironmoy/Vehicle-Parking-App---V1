@@ -9,26 +9,32 @@
     <h1>Please login to continue</h1>
     <hr />
     <form action="{{url_for('login')}}" method="POST">
-      <label for="username">Username: </label>
+      <label for="username"><span style="color: red">*</span>Username: </label>
       <input
         type="text"
         id="username"
         name="username"
         placeholder="your username"
+        required
       />
       <br />
       <br />
-      <label for="password">Password: </label>
+      <label for="password"><span style="color: red">*</span>Password: </label>
       <input
         type="password"
         id="password"
         name="password"
         placeholder="******"
+        required
       />
       <br />
       <br />
       <input type="submit" value="Login" />
     </form>
-    <p style="color: red">{{caution}}</p>
+    <p>
+      Please fill all the fields marked with <span style="color: red">*</span>
+    </p>
+    <br />
+    <p style="color: red">{{error}}</p>
   </body>
 </html>

@@ -29,14 +29,35 @@ def greet(name):
 def login():
     if request.method == "GET":
         return render_template('login.html')
+    
     elif request.method == "POST":
+        #fetch the entered fields
         username = request.form.get('username')
         password = request.form.get('password')
-        if username == "yomnorik" and password == "pw":
-            return render_template('hello.html', name=username, password=password)
+        
+        #fetch from db
+        user = User.query.filter_by(username = username).first()
+        
+        #check if user exists in fetched data
+        if user:
+            #check if password is correct
+            if user.check_password(password):
+                
+                #render homepage
+                first_name = user.first_name
+                logger.info(f"\nUser login: Username: {username}\n")
+                return render_template('dashboard.html', first_name = first_name)
+            
+            else:
+                logger.info(f"\nInvalid login: User entered wrong password\nAttempted by: {username}\n")
+                error = "Incorrect Password. Please try again."
+                return render_template('login.html', error=error)
+                
         else:
-            return render_template('login.html', caution = "Username or Password is incorrect. Please try again." )
-
+            logger.info(f"\nInvalid login: Username '{username}' does not exist.\n")
+            error = "Username does not exist. Please try again."
+            return render_template('login.html', error = error)
+            
 #register route
 @app.route('/register', methods=["GET","POST"])
 def register():
