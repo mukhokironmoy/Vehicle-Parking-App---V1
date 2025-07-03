@@ -1,4 +1,5 @@
 from extensions import db
+from .parking_spot import ParkingSpot
 
 class ParkingLot(db.Model):
     id = db.Column(db.Integer, primary_key = True)
@@ -8,4 +9,4 @@ class ParkingLot(db.Model):
     price_per_hour = db.Column(db.Float, nullable = False)
     max_spots = db.Column(db.Integer, nullable = False)
     
-    spots = db.relationship("ParkingSpot", backref="lot", lazy=True)
+    spots = db.relationship(ParkingSpot, backref="lot", lazy=True)

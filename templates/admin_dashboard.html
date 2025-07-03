@@ -1,13 +1,11 @@
 <!-- admin_dashboard.html -->
-{% extends "base.html" %} 
-
-{% block title %}Admin Dashboard{% endblock %} 
-
-{%block content %}
+{% extends "base.html" %} {% block title %}Admin Dashboard{% endblock %} {%block
+content %}
 <h1>Welcome back Admin!</h1>
 <br />
 <h3>What would you like to do today?</h3>
+<h3><a href="{{url_for('admin_parking_lots')}}">View Parking Lots</a></h3>
 <form action="{{url_for('logout')}}">
   <input type="submit" value="Logout" />
 </form>
-{% endblock %} 
+{% endblock %}

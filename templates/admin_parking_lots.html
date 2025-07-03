@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Parking Lots{% endblock %}
+
+{% block content %}
+  <h1>Parking Lots Management</h1>
+  <p>Below are all parking lots in the system.</p>
+  <br>
+  <a href="#"><button>Create New Parking Lot</button></a>
+  <br>
+  <br>
+
+  <table border="1" cellpadding="8" cellspacing="0">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Location Name</th>
+        <th>Address</th>
+        <th>Pin Code</th>
+        <th>Price per Hour</th>
+        <th>Max Spots</th>
+        <th>Available Spots</th>
+        <th>Occupied Spots</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in lot_data %}
+        <tr>
+          <td>{{ item.lot.id }}</td>
+          <td>{{ item.lot.prime_location_name }}</td>
+          <td>{{ item.lot.address }}</td>
+          <td>{{ item.lot.pin_code }}</td>
+          <td>{{ item.lot.price_per_hour }}</td>
+          <td>{{ item.lot.max_spots }}</td>
+          <td>{{ item.available }}</td>
+          <td>{{ item.occupied }}</td>
+          <td>
+            <!-- Placeholder buttons -->
+            <a href="#">Edit</a> |
+            <a href="#">Delete</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+    <br><br>
+  <a href="{{ url_for('admin_dashboard') }}">Back to Dashboard</a>
+{% endblock %}
