@@ -19,6 +19,7 @@ db.init_app(app)
 #importing models
 from models.user import User
 from models.parking_lot import ParkingLot
+from models.parking_spot import ParkingSpot
 
 #importing login manager
 from extensions import login_manager
@@ -155,23 +156,116 @@ def admin_parking_lots():
 
     #query lot data
     lots = ParkingLot.query.all()
-    print("LOTS:", lots)
     
     lot_data = []
-    print("LOT DATA:", lot_data)
 
     for lot in lots:
+        #calculate available and occupied spots for each lot
         available_spots = sum(1 for spot in lot.spots if spot.status == "A")
         occupied_spots = sum(1 for spot in lot.spots if spot.status == "O")
         
+        #append data
         lot_data.append(
             {"lot":lot,
             "available": available_spots,
             "occupied": occupied_spots} 
             )
-        
-    print(lot_data)    
+           
     return render_template("admin_parking_lots.html", lot_data=lot_data)
+
+'''----------------------------------------------------------------------------------------------------------------------------------------------'''
+#create parking lot
+@app.route('/admin/parking-lots/create', methods=["GET", "POST"])
+@login_required
+def create_parking_lot():
+    #check access
+    if current_user.role != "admin":
+        logger.warning(f"\nILLEGAL ROUTE ACCESS : {current_user.username} tried to access admin/parking-lots.\n")
+        return redirect(url_for('user_dashboard',username=current_user.username))
+
+    if request.method == "GET":
+        return render_template('create_parking_lot.html')
+    
+    elif request.method == "POST":
+        prime_location_name = request.form.get("prime_location_name", "").strip()
+        address = request.form.get("address", "").strip()
+        pin_code = request.form.get("pin_code", "").strip()
+        price_per_hour = request.form.get("price_per_hour", "").strip()
+        max_spots = request.form.get("max_spots", "").strip()
+        
+        #initialise empty error message
+        errors  = []
+        
+        #validation 1 : check if any fields empty
+        if not all([prime_location_name, address, pin_code, price_per_hour, max_spots]):
+            errors.append("Please fill in all fields.")
+        
+        #validation 2 : pin code validity
+        if not pin_code.isdigit() or len(pin_code) != 6:
+            errors.append("Pin code must be exactly 6 digits.\n")
+        
+        #validation 3 : price per hour validity
+        try: 
+            price_per_hour = float(price_per_hour)
+            if price_per_hour <= 0:
+                raise ValueError
+        except ValueError:
+            errors.append("Price per hour must be a non zero positive number.\n")
+        
+        #validation 4 : max spots validity
+        try: 
+            max_spots = int(max_spots)
+            if max_spots <= 0:
+                raise ValueError
+        except ValueError:
+            errors.append("Max Spots must be a non zero positive number.\n")
+            
+        if errors:
+            return render_template("create_parking_lot.html", error="<br>".join(errors))
+
+        
+        #create parking lot instance
+        new_lot = ParkingLot(
+            prime_location_name = prime_location_name,
+            address = address,
+            pin_code = pin_code,
+            price_per_hour = price_per_hour,
+            max_spots = max_spots
+        )
+        
+        #add lot to database
+        try:
+            db.session.add(new_lot)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            error = f"Something went wrong in saving your data :(\n"
+            logger.exception("Failed to create parking lot due to DB error.")
+            return render_template('create_parking_lot.html', error=error)
+        
+        #auto create spots for new lot
+        spots=[]
+        for i in range(max_spots):
+            new_spot =  ParkingSpot(
+                lot_id = new_lot.id,
+                status = "A"
+            )
+            
+            spots.append(new_spot)
+            
+        #add spots to database
+        try:
+            db.session.add_all(spots)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            error = f"Something went wrong in saving your data :(\n"
+            logger.exception("Failed to create parking spots for this lot due to DB error.")
+            return render_template('create_parking_lot.html', error=error)
+        
+
+        logger.info(f"New parking lot created: Lot id = {new_lot.id} Location = {prime_location_name} Total Spots = {max_spots}")
+        return render_template('create_parking_lot_success.html', id=new_lot.id, prime_location_name=prime_location_name, address=address, pin_code=pin_code, price_per_hour=price_per_hour, max_spots=max_spots)
 
         
 

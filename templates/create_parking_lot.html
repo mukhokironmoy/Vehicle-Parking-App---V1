@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Create Parking Lot{% endblock %}
+
+{% block content %}
+  <h1>Create a New Parking Lot</h1>
+  <form method="POST">
+    <label>Prime Location Name:</label><br/>
+    <input type="text" name="prime_location_name" required><br/><br/>
+
+    <label>Address:</label><br/>
+    <textarea name="address" rows="3" required></textarea><br/><br/>
+
+    <label>Pin Code:</label><br/>
+    <input type="text" name="pin_code" required><br/><br/>
+
+    <label>Price per Hour:</label><br/>
+    <input type="number" name="price_per_hour" step="0.01" min="0" required><br/><br/>
+
+    <label>Max Spots:</label><br/>
+    <input type="number" name="max_spots" min="1" required><br/><br/>
+
+    <input type="submit" value="Create Parking Lot">
+  </form>
+  <br/>
+  <p>Please fill all the fields marked with <span style="color: red">*</span></p>
+  <br />
+  <p style="color: red">{{error}}</p>
+  <br>
+  <a href="{{ url_for('admin_parking_lots') }}">Back to Parking Lots</a>
+{% endblock %}

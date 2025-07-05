@@ -1,0 +1,37 @@
+<!-- create_parking_lot_success.html -->
+{% extends "base.html" %} 
+{% block title %}Success{% endblock %} 
+
+{%block content%}
+<h1>Parking lot added successfully!</h1>
+<br />
+<h3>Details of your new parking lot are as follows:-</h3>
+<br />
+<table border="1">
+  <tr>
+    <td>Lot id</td>
+    <td>{{id}}</td>
+  </tr>
+  <tr>
+    <td>Prime Location Name</td>
+    <td>{{prime_location_name}}</td>
+  </tr>
+  <tr>
+    <td>Address</td>
+    <td>{{address}}</td>
+  </tr>
+  <tr>
+    <td>Pincode</td>
+    <td>{{pin_code}}</td>
+  </tr>
+  <tr>
+    <td>Price per hour</td>
+    <td>{{price_per_hour}}</td>
+  </tr>
+  <tr>
+    <td>Maximum Spots</td>
+    <td>{{max_spots}}</td>
+  </tr>
+</table>
+<h6><a href="{{url_for('admin_parking_lots')}}">Click here to view all parking lots</a></h6>
+{% endblock %}
