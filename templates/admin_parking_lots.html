@@ -1,50 +1,69 @@
-{% extends "base.html" %}
+{% extends "base.html" %} {% block title %}Manage Parking Lots{% endblock %} {%
+block content %}
+<h1>Parking Lots Management</h1>
+<p>Below are all parking lots in the system.</p>
+<br />
+<a href="{{url_for('create_parking_lot')}}"
+  ><button>Create New Parking Lot</button></a
+>
+<br />
+<br />
 
-{% block title %}Manage Parking Lots{% endblock %}
+<table border="1" cellpadding="8" cellspacing="0">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Location Name</th>
+      <th>Address</th>
+      <th>Pin Code</th>
+      <th>Price per Hour</th>
+      <th>Max Spots</th>
+      <th>Available Spots</th>
+      <th>Occupied Spots</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in lot_data %}
+    <tr>
+      <td>{{ item.lot.id }}</td>
+      <td>{{ item.lot.prime_location_name }}</td>
+      <td>{{ item.lot.address }}</td>
+      <td>{{ item.lot.pin_code }}</td>
+      <td>{{ item.lot.price_per_hour }}</td>
+      <td>{{ item.lot.max_spots }}</td>
+      <td>{{ item.available }}</td>
+      <td>{{ item.occupied }}</td>
+      <td>
+        <!-- Placeholder buttons -->
+        <form
+          action="{{ url_for('edit_parking_lot', lot_id=item.lot.id) }}"
+          method="GET"
+          style="display: inline"
+        >
+          <button type="submit">Edit</button>
+        </form>
 
-{% block content %}
-  <h1>Parking Lots Management</h1>
-  <p>Below are all parking lots in the system.</p>
-  <br>
-  <a href="{{url_for('create_parking_lot')}}"><button>Create New Parking Lot</button></a>
-  <br>
-  <br>
+        <br />
+        <br />
+        <form
+          action="{{ url_for('delete_parking_lot', lot_id=item.lot.id) }}"
+          method="POST"
+          style="display: inline"
+        >
+          <button
+            type="submit"
+            onclick="return confirm('Are you sure you want to delete this parking lot? This will also remove all its spots.')"
+          >
+            Delete
+          </button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
 
-  <table border="1" cellpadding="8" cellspacing="0">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Location Name</th>
-        <th>Address</th>
-        <th>Pin Code</th>
-        <th>Price per Hour</th>
-        <th>Max Spots</th>
-        <th>Available Spots</th>
-        <th>Occupied Spots</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for item in lot_data %}
-        <tr>
-          <td>{{ item.lot.id }}</td>
-          <td>{{ item.lot.prime_location_name }}</td>
-          <td>{{ item.lot.address }}</td>
-          <td>{{ item.lot.pin_code }}</td>
-          <td>{{ item.lot.price_per_hour }}</td>
-          <td>{{ item.lot.max_spots }}</td>
-          <td>{{ item.available }}</td>
-          <td>{{ item.occupied }}</td>
-          <td>
-            <!-- Placeholder buttons -->
-            <a href="#">Edit</a> |
-            <a href="#">Delete</a>
-          </td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-
-    <br><br>
-  <a href="{{ url_for('admin_dashboard') }}">Back to Dashboard</a>
+<br /><br />
+<a href="{{ url_for('admin_dashboard') }}">Back to Dashboard</a>
 {% endblock %}

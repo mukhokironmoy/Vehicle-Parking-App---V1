@@ -1,27 +1,27 @@
-<!-- create_parking_lot.html -->
+<!-- edit_parking_lot.html -->
 {% extends "base.html" %}
 
-{% block title %}Create Parking Lot{% endblock %}
+{% block title %}Edit Parking Lot{% endblock %}
 
 {% block content %}
-  <h1>Create a New Parking Lot</h1>
+  <h1>Edit Parking Lot :</h1>
   <form method="POST">
     <label><span style="color: red">*</span>Prime Location Name:</label><br/>
-    <input type="text" name="prime_location_name" required><br/><br/>
+    <input type="text" name="prime_location_name" value="{{lot.prime_location_name}}" required><br/><br/>
 
     <label><span style="color: red">*</span>Address:</label><br/>
-    <textarea name="address" rows="3" required></textarea><br/><br/>
+    <textarea name="address" rows="3" required >{{lot.address}}</textarea><br/><br/>
 
     <label><span style="color: red">*</span>Pin Code:</label><br/>
-    <input type="text" name="pin_code" required><br/><br/>
+    <input type="text" name="pin_code" required value="{{lot.pin_code}}"><br/><br/>
 
     <label><span style="color: red">*</span>Price per Hour:</label><br/>
-    <input type="number" name="price_per_hour" step="0.01" min="0" required><br/><br/>
+    <input type="number" name="price_per_hour" step="0.01" min="0" required value="{{lot.price_per_hour}}"><br/><br/>
 
     <label><span style="color: red">*</span>Max Spots:</label><br/>
-    <input type="number" name="max_spots" min="1" required><br/><br/>
+    <input type="number" name="max_spots" min="1" required value="{{lot.max_spots}}"><br/><br/>
 
-    <input type="submit" value="Create Parking Lot">
+    <input type="submit" value="Edit Parking Lot">
   </form>
   <br/>
   <p>Please fill all the fields marked with <span style="color: red">*</span></p>

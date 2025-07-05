@@ -267,8 +267,116 @@ def create_parking_lot():
         logger.info(f"New parking lot created: Lot id = {new_lot.id} Location = {prime_location_name} Total Spots = {max_spots}")
         return render_template('create_parking_lot_success.html', id=new_lot.id, prime_location_name=prime_location_name, address=address, pin_code=pin_code, price_per_hour=price_per_hour, max_spots=max_spots)
 
+'''----------------------------------------------------------------------------------------------------------------------------------------------'''
+#edit parking lot
+@app.route('/admin/parking-lots/edit/<int:lot_id>', methods=["GET", "POST"])
+@login_required
+def edit_parking_lot(lot_id):
+    # Check access
+    if current_user.role != "admin":
+        logger.warning(f"\nILLEGAL ROUTE ACCESS: {current_user.username} tried to access edit parking lot page.\n")
+        return redirect(url_for('user_dashboard', username=current_user.username))
+ 
+    #Query the lot
+    lot = ParkingLot.query.get(lot_id)
+    if not lot:
+        logger.warning(f"\nParking lot with lot id = {lot_id} was not found.\n")
+        abort(404, description=f"Parking lot with lot id = {lot_id} was not found")
         
+    if request.method == "GET":
+        #render edit page with prefilled data
+        return render_template('edit_parking_lot.html', lot=lot)
+    
+    elif request.method == "POST":
+        prime_location_name = request.form.get("prime_location_name", "").strip()
+        address = request.form.get("address", "").strip()
+        pin_code = request.form.get("pin_code", "").strip()
+        price_per_hour = request.form.get("price_per_hour", "").strip()
+        max_spots = request.form.get("max_spots", "").strip()
+        
+        #initialise empty error message
+        errors  = []
+        
+        #validation 1 : check if any fields empty
+        if not all([prime_location_name, address, pin_code, price_per_hour, max_spots]):
+            errors.append("Please fill in all fields.")
+        
+        #validation 2 : pin code validity
+        if not pin_code.isdigit() or len(pin_code) != 6:
+            errors.append("Pin code must be exactly 6 digits.\n")
+        
+        #validation 3 : price per hour validity
+        try: 
+            price_per_hour = float(price_per_hour)
+            if price_per_hour <= 0:
+                raise ValueError
+        except ValueError:
+            errors.append("Price per hour must be a non zero positive number.\n")
+        
+        #validation 4 : max spots validity
+        try: 
+            max_spots = int(max_spots)
+            if max_spots <= 0:
+                raise ValueError
+        except ValueError:
+            errors.append("Max Spots must be a non zero positive number.\n")
+            
+        if errors:
+            return render_template("edit_parking_lot.html", lot=lot, error="<br>".join(errors))
+        
+        
+        #update fields with new values
+        lot.prime_location_name = prime_location_name
+        lot.address = address
+        lot.pin_code = pin_code
+        lot.price_per_hour = price_per_hour
+        lot.max_spots = max_spots
+        
+        #commit to database
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            logger.exception("Failed to update parking lot due to DB error.")
+            error = "Something went wrong saving your changes. Please try again."
+            return render_template("edit_parking_lot.html", lot=lot, error=error)
 
+        #return updated data
+        logger.info(f"Parking lot updated: ID {lot.id}")
+        return redirect(url_for("admin_parking_lots"))
+
+'''----------------------------------------------------------------------------------------------------------------------------------------------'''
+#delete parking lot
+@app.route('/admin/parking-lots/delete/<int:lot_id>', methods=["POST"])
+def delete_parking_lot(lot_id):
+    # Check access
+    if current_user.role != "admin":
+        logger.warning(f"\nILLEGAL ROUTE ACCESS: {current_user.username} tried to DELETE parking lot.\n")
+        return redirect(url_for('user_dashboard', username=current_user.username))
+    
+    # Fetch the parking lot
+    lot = ParkingLot.query.get(lot_id)
+    if not lot:
+        logger.warning(f"\nParking lot with id={lot_id} not found for deletion.\n")
+        abort(404, description=f"Parking lot with ID {lot_id} not found.")
+ 
+    try:
+        #delete all spots related to this lot
+        for spot in lot.spots:
+            db.session.delete(spot)
+        
+        #delete the lot itself
+        db.session.delete(lot)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        logger.exception("Error while deleting parking lot and spots.")
+        error = "Something went wrong while deleting the parking lot."
+        # Optionally, redirect back with error (or flash)
+        return redirect(url_for("admin_parking_lots"))
+    
+    logger.info(f"Parking lot ID {lot_id} and all spots deleted by {current_user.username}.")
+    return redirect(url_for("admin_parking_lots"))
 '''----------------------------------------------------------------------------------------------------------------------------------------------'''
 #user dashboard
 @app.route('/<username>/dashboard')
