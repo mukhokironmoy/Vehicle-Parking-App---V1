@@ -409,9 +409,24 @@ def admin_users():
  
     # Query all users
     users = User.query.all()
- 
-    # Render template with users
-    return render_template('admin_users.html', users=users)
+    
+    #setup for current reservation
+    user_data = []
+    for user in users:
+        current_reservation = user.reservations.filter_by(leaving_timestamp=None).first()
+
+        if current_reservation:
+            spot_info = f"Spot #{current_reservation.spot.id} in {current_reservation.spot.lot.prime_location_name}"
+        else:
+            spot_info = "None"
+
+        user_data.append({
+            "user": user,
+            "current_spot": spot_info
+        })
+
+    return render_template("admin_users.html", user_data=user_data)
+
 '''----------------------------------------------------------------------------------------------------------------------------------------------'''
 #user dashboard
 @app.route('/<username>/dashboard')

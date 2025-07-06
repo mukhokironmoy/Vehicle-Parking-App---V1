@@ -1,6 +1,7 @@
 from extensions import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
+from .reservation import Reservation
 
 
 
@@ -12,6 +13,8 @@ class User(db.Model, UserMixin):
     _password = db.Column("password", db.String(200), nullable = False)
     contact_number = db.Column(db.String(20))
     role = db.Column(db.String(10), nullable=False, default="user")
+    
+    reservations = db.relationship("Reservation", backref="user", lazy="dynamic")
     
     @property
     def password(self):

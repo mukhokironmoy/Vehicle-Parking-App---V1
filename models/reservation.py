@@ -1,5 +1,6 @@
 from extensions import db
 from datetime import datetime
+from .parking_spot import ParkingSpot
 
 class Reservation(db.Model):
     id = db.Column(db.Integer, primary_key = True)
@@ -10,3 +11,4 @@ class Reservation(db.Model):
     leaving_timestamp = db.Column(db.DateTime, nullable=True)
     parking_cost = db.Column(db.Float, nullable=True)
     
+    spot = db.relationship("ParkingSpot", backref="reservations")
