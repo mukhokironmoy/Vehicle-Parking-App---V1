@@ -378,6 +378,21 @@ def delete_parking_lot(lot_id):
     logger.info(f"Parking lot ID {lot_id} and all spots deleted by {current_user.username}.")
     return redirect(url_for("admin_parking_lots"))
 '''----------------------------------------------------------------------------------------------------------------------------------------------'''
+#admin view users
+@app.route('/admin/users')
+@login_required
+def admin_users():
+    # Check access
+    if current_user.role != "admin":
+        logger.warning(f"\nILLEGAL ROUTE ACCESS: {current_user.username} tried to access admin users page.\n")
+        return redirect(url_for('user_dashboard', username=current_user.username))
+ 
+    # Query all users
+    users = User.query.all()
+ 
+    # Render template with users
+    return render_template('admin_users.html', users=users)
+'''----------------------------------------------------------------------------------------------------------------------------------------------'''
 #user dashboard
 @app.route('/<username>/dashboard')
 @login_required
