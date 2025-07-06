@@ -1,0 +1,36 @@
+<!-- admin_parking_spots.html-->
+ {% extends "base.html" %}
+{% block title %}Parking Spots for {{ lot.prime_location_name }}{% endblock %}
+
+{% block content %}
+<h1>{{ lot.prime_location_name }}</h1>
+<h3>Parking spots in location: </h3>
+
+<table border="1" cellpadding="8" cellspacing="0">
+  <thead>
+    <tr>
+      <th>Spot ID</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for spot in spots %}
+    <tr>
+      <td>{{ spot.id }}</td>
+      <td>
+        {% if spot.status == "A" %}
+          Available
+        {% elif spot.status == "O" %}
+          Occupied
+        {% else %}
+          Unknown
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<br/>
+<a href="{{ url_for('admin_parking_lots') }}">Back to Parking Lots</a>
+{% endblock %}

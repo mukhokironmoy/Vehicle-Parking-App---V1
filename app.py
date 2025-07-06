@@ -268,6 +268,26 @@ def create_parking_lot():
         return render_template('create_parking_lot_success.html', id=new_lot.id, prime_location_name=prime_location_name, address=address, pin_code=pin_code, price_per_hour=price_per_hour, max_spots=max_spots)
 
 '''----------------------------------------------------------------------------------------------------------------------------------------------'''
+#view spots
+@app.route('/admin/parking-lots/<int:lot_id>/spots')
+@login_required
+def view_parking_spots(lot_id):
+    # Check access
+    if current_user.role != "admin":
+        logger.warning(f"\nILLEGAL ROUTE ACCESS: {current_user.username} tried to access parking spots.\n")
+        return redirect(url_for('user_dashboard', username=current_user.username))
+    
+    # Fetch lot and spots
+    lot = ParkingLot.query.get(lot_id)
+    if not lot:
+        logger.warning(f"\nParking lot with lot id = {lot_id} was not found.\n")
+        abort(404, description=f"Parking lot with lot id = {lot_id} was not found")
+        
+    spots = lot.spots
+
+    return render_template("admin_parking_spots.html", lot=lot, spots=spots)
+
+'''----------------------------------------------------------------------------------------------------------------------------------------------'''
 #edit parking lot
 @app.route('/admin/parking-lots/edit/<int:lot_id>', methods=["GET", "POST"])
 @login_required

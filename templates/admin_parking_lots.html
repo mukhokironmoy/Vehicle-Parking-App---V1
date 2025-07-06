@@ -36,7 +36,13 @@ block content %}
       <td>{{ item.available }}</td>
       <td>{{ item.occupied }}</td>
       <td>
-        <!-- Placeholder buttons -->
+        <form
+          action="{{ url_for('view_parking_spots', lot_id=item.lot.id) }}"
+          method="GET"
+          style="display: inline"
+        >
+          <button type="submit">View Spots</button>
+        </form>
         <form
           action="{{ url_for('edit_parking_lot', lot_id=item.lot.id) }}"
           method="GET"
@@ -44,8 +50,6 @@ block content %}
         >
           <button type="submit">Edit</button>
         </form>
-
-        <br />
         <br />
         <form
           action="{{ url_for('delete_parking_lot', lot_id=item.lot.id) }}"
